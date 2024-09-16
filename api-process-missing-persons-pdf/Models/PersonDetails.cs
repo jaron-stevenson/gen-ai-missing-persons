@@ -1,26 +1,24 @@
 /*
-{
-  "name": "",
-  "race": "",
-  "age": 0,
-  "sex": "",
-  "height": "",
-  "weight": "",
-  "eye_color": "",
-  "hair": "",
-  "alias": "",
-  "tattoos": "",
-  "last_seen": "",
-  "date_reported": "",
-  "missing_from": "",
-  "conditions_of_disappearance": "",
-  "officer_details": {
-    "name": "",
-    "badge_number": "",
-    "department": ""
-  },
-  "phone": ""
-}
+ {
+            'name': '',
+            'race': '',
+            'age': 0,
+            'sex': '',
+            'height': '',
+            'weight': '',
+            'eye_color': '',
+            'hair': '',
+            'alias': '',
+            'tattoos': '',
+            'last_seen': '',
+            'date_reported': '',
+            'missing_from': '',
+            'conditions_of_disappearance': '',
+            'officer_info':'',
+            'phone_number1':'',
+            'phone_number2':'',
+            'currentstatus':''
+        }
 */
 
 using System.Text.Json.Serialization;
@@ -70,21 +68,13 @@ public class MissingPerson
     [JsonPropertyName("conditions_of_disappearance")]
     public string? ConditionsOfDisappearance { get; set; }
 
-    [JsonPropertyName("officer_details")]
-    public OfficerDetails? OfficerDetails { get; set; }
+    [JsonPropertyName("officer_info")]
+    public string? OfficerInfo { get; set; }
 
-    [JsonPropertyName("phone")]
-    public string? Phone { get; set; }
+    [JsonPropertyName("phone_number1")]
+    public string? PhoneNumber1 { get; set; }
+
+    [JsonPropertyName("phone_number2")]
+    public string? PhoneNumber2 { get; set; }
 }
 
-public class OfficerDetails
-{
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
-
-    [JsonPropertyName("badge_number")]
-    public string? BadgeNumber { get; set; }
-
-    [JsonPropertyName("department")]
-    public string? Department { get; set; }
-}

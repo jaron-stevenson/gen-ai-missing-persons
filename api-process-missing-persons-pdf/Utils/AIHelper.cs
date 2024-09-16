@@ -4,92 +4,58 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
+using Microsoft.Extensions.Logging;
 using Azure.Storage.Blobs;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using Microsoft.Extensions.Configuration;
+using api_process_mp_pdfs.Prompts;
+using api_process_mp_pdfs.Models;
 using System.Net;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace api_process_mp_pdfs.Utils
 {
     public class AIHelper
     {
         private Kernel _kernel;
+        private readonly ILogger<AIHelper> _logger; // Injected logger
+
 
         private string _azure_StroageConnectionString = Environment.GetEnvironmentVariable("stggannettpoc_STORAGE", EnvironmentVariableTarget.Process) ?? "";
         private string _inbound_MP_PdfContainer = Environment.GetEnvironmentVariable("INBOUND_MP_PDF_CONTAINER", EnvironmentVariableTarget.Process) ?? "";
 
-        private string _jsonSchema = @"
-        {
-            ""$schema"": ""http://json-schema.org/draft-07/schema#"",
-            ""type"": ""object"",
-            ""properties"": {
-                ""name"": { ""type"": ""string"" },
-                ""race"": { ""type"": ""string"" },
-                ""age"": { ""type"": ""integer"", ""minimum"": 0 },
-                ""sex"": { ""type"": ""string"" },
-                ""height"": { ""type"": ""string"" },
-                ""weight"": { ""type"": ""string"" },
-                ""eye_color"": { ""type"": ""string"" },
-                ""hair"": { ""type"": ""string"" },
-                ""alias"": { ""type"": ""string"" },
-                ""tattoos"": { ""type"": ""string"" },
-                ""last_seen"": { ""type"": ""string"", ""format"": ""date-time"" },
-                ""date_reported"": { ""type"": ""string"", ""format"": ""date-time"" },
-                ""missing_from"": { ""type"": ""string"" },
-                ""conditions_of_disappearance"": { ""type"": ""string"" },
-                ""officer_details"": {
-                    ""type"": ""object"",
-                    ""properties"": {
-                        ""name"": { ""type"": ""string"" },
-                        ""badge_number"": { ""type"": ""string"" },
-                        ""department"": { ""type"": ""string"" }
-                    },
-                    ""required"": [""name"", ""badge_number"", ""department""]
-                },
-                ""phone"": { ""type"": ""string"", ""pattern"": ""^\\\\+?[0-9]{10,15}$"" }
-            },
-            ""required"": [
-                ""name"", ""age"", ""sex"", ""last_seen"", ""date_reported"", ""missing_from"",
-                ""officer_details"", ""phone""
-            ]
-        }";
+       
 
-        private string _details = @"name, race, age, sex, height, weight, eye color, hair, alias, tattoos, last seen, date reported, missing from, conditions of disappearance, officer details, phone";
-
-        private string? _promptAnalyzePDFPrompt;
-        private string _promptIdealCandidateResumePrompt = @"Based on the following job requirements, create a resume for an ideal candidate:\n\n{{$analysis}} and use Markdown format";
-
-        public AIHelper(Kernel kernel)
+        public AIHelper(Kernel kernel, ILogger<AIHelper> logger)
         {
             this._kernel = kernel;
-            InitializePrompts();  // Initialize the prompt strings here
+            this._logger = logger;
         }
 
-        private void InitializePrompts()
+        public async Task<MissingPerson> GenerateJSONStructureAsync(Stream pdfStream, string name)
         {
-            _promptAnalyzePDFPrompt = $@"Text: {{$pdfText}} <end of text> Analyze the text and extract the {_details} from the text. Using the JSON schema below, populate the properties with the data you extracted and only return the JSON result: {_jsonSchema}";
-        }
-
-        public async Task<string> GenerateJSONStructureAsync(Stream pdfStream, string name)
-        {
-            var test = "test";
-            var test2 = $@"test2 {test}";
 
             string extractedText = ExtractTextFromPdf(pdfStream);
 
             // Step 2: Analyze the extracted text using Azure OpenAI
-            string analysis = await AnalyzePdfText(extractedText);
+            var missingPersonData = await AnalyzePdfText(extractedText);
 
-            // Step 3: Generate the ideal resume using the analyzed text
-            // string idealResume = await GenerateResume(analysis);
+            // Check if missingPersonData is null
+            if (missingPersonData == null)
+            {
+                // Log the error or handle the null case as needed
+                // For example, you might throw an exception or return a default value
+                throw new InvalidOperationException("Failed to analyze PDF text and generate MissingPerson data.");
+                // Alternatively, return a default value or an empty object
+                // return new MissingPerson();
+            }
 
-            // Step 4: Write the ideal resume to the "Ideal_Resumes" container
-            // await WriteToBlob(outputContainerName, $"{Path.GetFileNameWithoutExtension(name)}_IdealResume.md", idealResume);
-
-            return "Finished generating ideal resume.";
+            return missingPersonData ;
         }
 
         private string ExtractTextFromPdf(Stream pdfStream)
@@ -111,48 +77,78 @@ namespace api_process_mp_pdfs.Utils
             return text.ToString();
         }
 
-        private async Task<string> AnalyzePdfText(string pdfText)
+        private async Task<MissingPerson?> AnalyzePdfTextOld(string pdfText)
         {
             try
             {
-                var executionSettings = new OpenAIPromptExecutionSettings()
+                JsonSerializerOptions s_options = new() { WriteIndented = true };
+                var executionSettings = new OpenAIPromptExecutionSettings
                 {
-                    MaxTokens = 2000,
+                    ResponseFormat = "json_object"
                 };
 
-                KernelArguments arguments = new(executionSettings) { { "pdfText", pdfText } };
-                var response = await _kernel.InvokePromptAsync(_promptAnalyzePDFPrompt ?? "", arguments);
+                var extractionPrompt =  MissingPersonsPluginPrompts.GetMissingPersonsExtractPrompt(pdfText);
                 
-                // var response = await _kernel.InvokePromptAsync(_promptAnalyzePDFPrompt, arguments);
-                return response.GetValue<string>() ?? "";
+                var extractionResult = await _kernel.InvokePromptAsync(extractionPrompt);
+
+                var extractionResultString = extractionResult.GetValue<string>();
+
+                MissingPerson? missingPersonData = JsonSerializer.Deserialize<MissingPerson>(extractionResultString   ?? string.Empty, s_options);
+
+                return missingPersonData ;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
-                return string.Empty;
+                return null;
             }
         }
 
-        private async Task<string> GenerateResume(string analysis)
+        private async Task<MissingPerson?> AnalyzePdfText(string pdfText)
         {
             try
             {
-                var executionSettings = new OpenAIPromptExecutionSettings()
+                // Configure JSON serializer options
+                JsonSerializerOptions s_options = new() { WriteIndented = true };
+
+                // Set up execution settings for OpenAI prompt
+                var executionSettings = new OpenAIPromptExecutionSettings
                 {
-                    MaxTokens = 2000,
+                    ResponseFormat = "json_object"
                 };
 
-                KernelArguments arguments = new(executionSettings) { { "analysis", analysis } };
-                var response = await _kernel.InvokePromptAsync(_promptIdealCandidateResumePrompt, arguments);
-                return response.GetValue<string>() ?? "";
+                // Create the extraction prompt
+                var extractionPrompt = MissingPersonsPluginPrompts.GetMissingPersonsExtractPrompt(pdfText);
+
+                // Invoke the prompt asynchronously
+                var extractionResult = await _kernel.InvokePromptAsync(extractionPrompt);
+
+                // Get the result as a string
+                var extractionResultString = extractionResult.GetValue<string>();
+
+                // Log the result for debugging
+                _logger.LogDebug("Extraction Result: {ExtractionResult}", extractionResultString);
+
+                // Deserialize the result into the MissingPerson class
+                MissingPerson? missingPersonData = JsonSerializer.Deserialize<MissingPerson>(extractionResultString ?? "", s_options);
+
+                return missingPersonData;
+            }
+            catch (JsonException jsonEx)
+            {
+                // Log JSON deserialization errors
+                _logger.LogError(jsonEx, "Failed to deserialize extraction result.");
+                throw; // Rethrow the exception if you want to propagate it
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}");
-                return string.Empty;
+                // Log other types of errors
+                _logger.LogError(ex, "An error occurred while analyzing PDF text.");
+                throw; // Rethrow the exception if you want to propagate it
             }
         }
-
+    
+        // The following is not being used
         private async Task WriteToBlob(string containerName, string blobName, string content)
         {
             try
