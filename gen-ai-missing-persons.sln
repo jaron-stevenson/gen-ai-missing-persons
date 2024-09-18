@@ -5,15 +5,7 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api-process-missing-persons-pdf", "api-process-missing-persons-pdf\api-process-missing-persons-pdf.csproj", "{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-process-missing-persons-pdf (1)", "api-process-missing-persons-pdf", "{D77E9C8B-11D0-4056-85E0-CA467D381BCE}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "obj", "obj", "{29437116-3199-426A-8BBC-45DC3AEC1400}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Debug", "Debug", "{7E24E43F-E8E0-4DE4-93AF-DDCF9AEE9161}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "net8.0", "net8.0", "{0F738D4C-2866-4C47-A3F3-9D4246603528}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkerExtensions", "api-process-missing-persons-pdf\obj\Debug\net8.0\WorkerExtensions\WorkerExtensions.csproj", "{42398EC7-A5A0-4D0D-9361-EE5489B736BA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-process-missing-persons-pdf (1)", "api-process-missing-persons-pdf (1)", "{D77E9C8B-11D0-4056-85E0-CA467D381BCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,19 +17,12 @@ Global
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42398EC7-A5A0-4D0D-9361-EE5489B736BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42398EC7-A5A0-4D0D-9361-EE5489B736BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42398EC7-A5A0-4D0D-9361-EE5489B736BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42398EC7-A5A0-4D0D-9361-EE5489B736BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{29437116-3199-426A-8BBC-45DC3AEC1400} = {D77E9C8B-11D0-4056-85E0-CA467D381BCE}
-		{7E24E43F-E8E0-4DE4-93AF-DDCF9AEE9161} = {29437116-3199-426A-8BBC-45DC3AEC1400}
-		{0F738D4C-2866-4C47-A3F3-9D4246603528} = {7E24E43F-E8E0-4DE4-93AF-DDCF9AEE9161}
-		{42398EC7-A5A0-4D0D-9361-EE5489B736BA} = {0F738D4C-2866-4C47-A3F3-9D4246603528}
+		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64} = {D77E9C8B-11D0-4056-85E0-CA467D381BCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FCF3FC7D-6A8C-4E30-AD8C-2F520D7B8E41}
