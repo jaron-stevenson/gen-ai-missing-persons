@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api-process-missing-persons-pdf", "api-process-missing-persons-pdf\api-process-missing-persons-pdf.csproj", "{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api-process-missing-persons-pdf (1)", "api-process-missing-persons-pdf (1)", "{D77E9C8B-11D0-4056-85E0-CA467D381BCE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "api-missing-persons", "api-missing-persons\api-missing-persons.csproj", "{F62CE4F7-167C-4BE1-B6AD-F097787498BB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,13 @@ Global
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F62CE4F7-167C-4BE1-B6AD-F097787498BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F62CE4F7-167C-4BE1-B6AD-F097787498BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F62CE4F7-167C-4BE1-B6AD-F097787498BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F62CE4F7-167C-4BE1-B6AD-F097787498BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{C0F8A66F-AD40-4CD4-9421-5F4F82F77D64} = {D77E9C8B-11D0-4056-85E0-CA467D381BCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FCF3FC7D-6A8C-4E30-AD8C-2F520D7B8E41}
