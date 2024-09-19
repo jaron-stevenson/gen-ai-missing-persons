@@ -2,34 +2,26 @@
 {
     using Microsoft.SemanticKernel;
     using System.ComponentModel;
-    using api_missing_persons.Interfaces;
+    using api_missing_persons.Services;
 
     public class DBQueryPlugin
     {
-        private static bool _hrToggleContact;
-        private IAzureDbService _azureDbService;
-        private ILogger<DBQueryPlugin> _logger;
+        private string _dbConnection;
 
-        public DBQueryPlugin(
-            IAzureDbService azureDbService, 
-            ILogger<DBQueryPlugin> logger)
+        public DBQueryPlugin(IConfiguration configuration)
         {
-            _azureDbService = azureDbService;
-            _logger = logger;
+            _dbConnection = configuration.GetValue<string>("DatabaseConnection");
         }
 
         [KernelFunction]
-        [Description("")]
-        [return: Description("A list of missing persons.")]
+        [Description("Executes a SQL query to get a list of missing persons.")]
         public async Task<string> GetMissingPersons(string query)
         {
-            _logger.LogInformation($"SQL Query: {query}");
-
-            var dbResults = await _azureDbService.GetDbResults(query);
+            var azureDbService = new AzureDbService(_dbConnection);
+            var dbResults = await azureDbService.GetDbResults(query);
 
             string results = dbResults;
 
-            _logger.LogInformation($"DB Results:{results}");
             return results;
         }
     }

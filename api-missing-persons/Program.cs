@@ -1,8 +1,7 @@
-using api_missing_persons.Interfaces;
-using api_missing_persons.Plugins;
+using api_missing_persons.Prompts;
 using api_missing_persons.Services;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,16 +14,11 @@ var configuration = builder.Configuration;
 var apiDeploymentName = configuration.GetValue<string>("AzureOpenAiDeploymentName");
 var apiEndpoint = configuration.GetValue<string>("AzureOpenAiEndpoint");
 var apiKey = configuration.GetValue<string>("AzureOpenAiKey");
-var connectionString = configuration.GetConnectionString("DatabaseConnection");
+var connectionString = configuration.GetValue<string>("DatabaseConnection");
 
 // Add services to the container.
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Logging.AddConsole();
-
-builder.Services.AddTransient<IAzureDbService>(s =>
-{
-    return new AzureDbService(connectionString);
-});
 
 builder.Services.AddTransient<Kernel>(s =>
 {
@@ -34,10 +28,19 @@ builder.Services.AddTransient<Kernel>(s =>
         apiEndpoint,
         apiKey);
 
-    builder.Plugins.AddFromType<DBQueryPlugin>();
-
     return builder.Build();
 });
+
+builder.Services.AddSingleton<IChatCompletionService>(sp =>
+                     sp.GetRequiredService<Kernel>().GetRequiredService<IChatCompletionService>());
+
+builder.Services.AddSingleton<IChatHistoryManager>(sp =>
+{
+    string systemmsg = CorePrompts.GetSystemPrompt();
+    return new ChatHistoryManager(systemmsg);
+});
+
+builder.Services.AddHostedService<ChatHistoryCleanupService>();
 
 builder.Services.AddControllers();
 

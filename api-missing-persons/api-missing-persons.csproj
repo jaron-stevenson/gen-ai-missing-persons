@@ -26,4 +26,10 @@
     <ProjectReference Include="..\nl2sql.library\Nl2Sql.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="appsettings.Local.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
