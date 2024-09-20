@@ -6,18 +6,11 @@
     using System.Data.SqlClient;
     using System.Text.Json;
 
-    public class AzureDbService : IAzureDbService
+    public class AzureDbService(string connectionString) : IAzureDbService
     {
-        private readonly string _connectionString;
-
-        public AzureDbService(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-
         public async Task<string> GetDbResults(string query)
         {
-            using IDbConnection connection = new SqlConnection(_connectionString);
+            using IDbConnection connection = new SqlConnection(connectionString);
 
             var dbResult = await connection.QueryAsync<dynamic>(query);
             var jsonString = JsonSerializer.Serialize(dbResult);
