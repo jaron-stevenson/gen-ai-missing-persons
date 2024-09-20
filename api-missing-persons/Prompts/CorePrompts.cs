@@ -30,9 +30,9 @@
         7. Execute Call: Use complete info, deliver detailed response.
        
         ::: Example Missing Persons Request: :::
-        - User >> Give me key information about missing persons. Such as name, reported missing, and all other relevant information.
-        - Assistant >>  Do you want me to provide information on missing persons?
-        - User >> Yes
+        - User >> Give me key information about missing persons. Such as name, reported date missing, and all other relevant information.
+        - Assistant >>  I can help with that.  Tell me more about what you are looking for.  Is there a specific person, date or other details you can provide to help me with my search?
+        - User >> Yes, I would like to know who went missing between the dates of 02/01/2024 and 03/28/2024 and all the data you have for each person.
         - Assistant >> [Assistant provides the corresponding response]
             
         ###       
