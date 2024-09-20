@@ -11,19 +11,19 @@ namespace SemanticKernel.Data.Nl2Sql.Harness;
 /// </summary>
 public sealed class SqlSchemaProviderHarness
 {
-    private static string _dbConnection;
-    private static string _dbDescription;
+    private string _connectionString;
+    private string _databaseDescription;
 
-    public SqlSchemaProviderHarness(IConfiguration configuration)
+    public SqlSchemaProviderHarness(string connectionString, string databaseDescription)
     {
-        _dbConnection = configuration.GetValue<string>("DatabaseConnection");
-        _dbDescription = configuration.GetValue<string>("DatabaseDescription");
+        _connectionString = connectionString;
+        _databaseDescription = databaseDescription;
     }
 
     public async Task<string> ReverseEngineerSchemaYAMLAsync(string[] tableNames)
     {
         string dbName = GetDatabaseName();
-        var yaml = await this.CaptureSchemaYAMLAsync(dbName, _dbConnection, _dbDescription, tableNames).ConfigureAwait(false);
+        var yaml = await this.CaptureSchemaYAMLAsync(dbName, _connectionString, _databaseDescription, tableNames).ConfigureAwait(false);
 
         return yaml;    
     }
@@ -31,7 +31,7 @@ public sealed class SqlSchemaProviderHarness
     public async Task<string> ReverseEngineerSchemaJSONAsync(string[] tableNames)
     {
         string dbName = GetDatabaseName();
-        var yaml = await this.CaptureSchemaJSONAsync(dbName, _dbConnection, _dbDescription, tableNames).ConfigureAwait(false);
+        var yaml = await this.CaptureSchemaJSONAsync(dbName, _connectionString, _databaseDescription, tableNames).ConfigureAwait(false);
 
         return yaml;
     }
@@ -76,15 +76,15 @@ public sealed class SqlSchemaProviderHarness
         //await this.SaveSchemaAsync("json", databaseKey, schema.ToJson()).ConfigureAwait(false);
     }
 
-    private static string GetDatabaseName()
+    private string GetDatabaseName()
     {
         DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
-        builder.ConnectionString = _dbConnection;
-        object databaseName;
+        builder.ConnectionString = _connectionString;
+        object? databaseName;
 
         if (builder.TryGetValue("Initial Catalog", out databaseName) || builder.TryGetValue("Database", out databaseName))
         {
-            return databaseName.ToString();
+            return databaseName?.ToString() ?? string.Empty;
         }
         else
         {

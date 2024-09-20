@@ -17,26 +17,31 @@ namespace api_missing_persons.Controllers
     public class ChatController : ControllerBase
     {
         private readonly ILogger<ChatController> _logger;
-        private readonly IConfiguration _configuration;
         private readonly Kernel _kernel;
         private readonly IChatCompletionService _chat;
         private readonly IChatHistoryManager _chatHistoryManager;
         private readonly IAzureDbService _azureDbService;
+        private readonly string _connectionString;
+        private readonly string _databaseDescription;
+        private readonly string _tables;
 
         public ChatController(
             ILogger<ChatController> logger, 
             IConfiguration configuration,
-             Kernel kernel,
-             IChatCompletionService chat,
-             IChatHistoryManager chathistorymanager,
-             IAzureDbService azuredbservice)
+            Kernel kernel,
+            IChatCompletionService chat,
+            IChatHistoryManager chathistorymanager,
+            IAzureDbService azuredbservice)
         {
             _kernel = kernel;
             _chat = chat;
             _chatHistoryManager = chathistorymanager;
             _logger = logger;
-            _configuration = configuration;
             _azureDbService = azuredbservice;
+
+            _connectionString = configuration.GetValue<string>("DatabaseConnection") ?? throw new ArgumentNullException("DatabaseConnection");
+            _databaseDescription = configuration.GetValue<string>("DatabaseDescription") ?? throw new ArgumentNullException("DatabaseDescription");
+            _tables = configuration.GetValue<string>("Tables") ?? throw new ArgumentNullException("Tables");
         }
 
         [HttpPost]
@@ -91,10 +96,9 @@ namespace api_missing_persons.Controllers
 
         private async Task<string> GetDatabaseSchemaAsync()
         {
-            var sqlHarness = new SqlSchemaProviderHarness(_configuration);
+            var sqlHarness = new SqlSchemaProviderHarness(_connectionString, _databaseDescription);
             var jsonSchema = string.Empty;
-            var tables = _configuration.GetValue<string>("Tables") ?? throw new ArgumentNullException("Tables");
-            var tableNames = tables.Split("|");
+            var tableNames = _tables.Split("|");
             jsonSchema = await sqlHarness.ReverseEngineerSchemaJSONAsync(tableNames);
 
             return jsonSchema;
