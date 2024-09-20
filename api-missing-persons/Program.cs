@@ -12,10 +12,10 @@ builder.Configuration
     .AddJsonFile("appsettings.Local.json", optional: true, reloadOnChange: true); // Add this line
 
 var configuration = builder.Configuration;
-var apiDeploymentName = configuration.GetValue<string>("AzureOpenAiDeploymentName");
-var apiEndpoint = configuration.GetValue<string>("AzureOpenAiEndpoint");
-var apiKey = configuration.GetValue<string>("AzureOpenAiKey");
-var connectionString = configuration.GetValue<string>("DatabaseConnection");
+var apiDeploymentName = configuration.GetValue<string>("AzureOpenAiDeploymentName") ?? throw new ArgumentException("The AzureOpenAiDeploymentName is not configured or is empty.");
+var apiEndpoint = configuration.GetValue<string>("AzureOpenAiEndpoint") ?? throw new ArgumentException("The AzureOpenAiEndpoint is not configured or is empty.");
+var apiKey = configuration.GetValue<string>("AzureOpenAiKey") ?? throw new ArgumentException("The AzureOpenAiKey is not configured or is empty.");
+var connectionString = configuration.GetValue<string>("DatabaseConnection") ?? throw new ArgumentException("The DatabaseConnection is not configured or is empty.");
 
 // Add services to the container.
 builder.Services.AddApplicationInsightsTelemetry();
