@@ -14,7 +14,6 @@ namespace api_process_mp_pdfs.Function
         private readonly Kernel _kernel;
         private readonly AIHelper _aiHelper;
 
-
         public BlobTriggerMP_ProcessPDFs(ILogger<BlobTriggerMP_ProcessPDFs> logger, ILogger<AIHelper> aiLogger, Kernel kernel)
         {
             _logger = logger;

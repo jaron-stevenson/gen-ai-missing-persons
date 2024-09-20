@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 
-string ApiDeploymentName = Environment.GetEnvironmentVariable("ApiDeploymentName2", EnvironmentVariableTarget.Process) ?? "";
-string ApiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint2", EnvironmentVariableTarget.Process) ?? "";
-string ApiKey = Environment.GetEnvironmentVariable("ApiKey2", EnvironmentVariableTarget.Process) ?? "";
+string ApiDeploymentName = Environment.GetEnvironmentVariable("ApiDeploymentName", EnvironmentVariableTarget.Process) ?? "";
+string ApiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint", EnvironmentVariableTarget.Process) ?? "";
+string ApiKey = Environment.GetEnvironmentVariable("ApiKey", EnvironmentVariableTarget.Process) ?? "";
 string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")?? "";
 
 // Not being used but might be needed in the future
