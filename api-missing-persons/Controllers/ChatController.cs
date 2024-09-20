@@ -1,3 +1,4 @@
+using api_missing_persons.Interfaces;
 using api_missing_persons.Models;
 using api_missing_persons.Plugins;
 using api_missing_persons.Prompts;
@@ -20,19 +21,22 @@ namespace api_missing_persons.Controllers
         private readonly Kernel _kernel;
         private readonly IChatCompletionService _chat;
         private readonly IChatHistoryManager _chatHistoryManager;
+        private readonly IAzureDbService _azureDbService;
 
         public ChatController(
             ILogger<ChatController> logger, 
             IConfiguration configuration,
              Kernel kernel,
              IChatCompletionService chat,
-             IChatHistoryManager chathistorymanager)
+             IChatHistoryManager chathistorymanager,
+             IAzureDbService azuredbservice)
         {
             _kernel = kernel;
             _chat = chat;
             _chatHistoryManager = chathistorymanager;
             _logger = logger;
             _configuration = configuration;
+            _azureDbService = azuredbservice;
         }
 
         [HttpPost]
@@ -41,40 +45,59 @@ namespace api_missing_persons.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Post([FromBody] ChatProviderRequest chatRequest)
         {
-            if (string.IsNullOrEmpty(chatRequest.SessionId))
-            {
-                // needed for new chats
-                chatRequest.SessionId = Guid.NewGuid().ToString();
-            }
-
-            var sessionId = chatRequest.SessionId;
-            var chatHistory = _chatHistoryManager.GetOrCreateChatHistory(sessionId);
-            var sqlHarness = new SqlSchemaProviderHarness(_configuration);
-
-            _kernel.ImportPluginFromObject(new DBQueryPlugin(_configuration));
             var response = new ChatProviderResponse();
 
-            var jsonSchema = string.Empty;
-            string[]? tableNames = null;
+            try
+            {
+                if (string.IsNullOrEmpty(chatRequest.SessionId))
+                {
+                    // needed for new chats
+                    chatRequest.SessionId = Guid.NewGuid().ToString();
+                }
 
-            tableNames = "dbo.MissingPersons".Split(","); // You can have more that one table defined here
-            jsonSchema = await sqlHarness.ReverseEngineerSchemaJSONAsync(tableNames);
+                if (string.IsNullOrEmpty(chatRequest.Prompt))
+                {
+                    _logger.LogWarning("Chat request is missing prompt.");
+                    return new BadRequestResult();
+                }
 
-            chatHistory.AddUserMessage(NLPSqlPluginPrompts.GetNLPToSQLSystemPrompt(jsonSchema));
-            chatHistory.AddUserMessage(chatRequest.Prompt);
+                var sessionId = chatRequest.SessionId;
+                var chatHistory = _chatHistoryManager.GetOrCreateChatHistory(sessionId);
 
-            ChatMessageContent? result = null;
+                _kernel.ImportPluginFromObject(new DBQueryPlugin(_azureDbService));
 
-            result = await _chat.GetChatMessageContentAsync(
-                  chatHistory,
-                  executionSettings: new OpenAIPromptExecutionSettings { Temperature = 0.8, TopP = 0.0, ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions },
-                  kernel: _kernel);
+                var jsonSchema = await GetDatabaseSchemaAsync();
 
-            Console.WriteLine(result.Content);
+                chatHistory.AddUserMessage(NLPSqlPluginPrompts.GetNLPToSQLSystemPrompt(jsonSchema));
+                chatHistory.AddUserMessage(chatRequest.Prompt);
 
-            response.ChatResponse = result.Content;
+                ChatMessageContent? result = null;
+
+                result = await _chat.GetChatMessageContentAsync(
+                      chatHistory,
+                      executionSettings: new OpenAIPromptExecutionSettings { Temperature = 0.8, TopP = 0.0, ToolCallBehavior = ToolCallBehavior.AutoInvokeKernelFunctions },
+                      kernel: _kernel);
+
+                response.ChatResponse = result.Content;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing chat request");
+                return new BadRequestResult();
+            }                      
 
             return new OkObjectResult(response);
+        }
+
+        private async Task<string> GetDatabaseSchemaAsync()
+        {
+            var sqlHarness = new SqlSchemaProviderHarness(_configuration);
+            var jsonSchema = string.Empty;
+            var tables = _configuration.GetValue<string>("Tables") ?? throw new ArgumentNullException("Tables");
+            var tableNames = tables.Split("|");
+            jsonSchema = await sqlHarness.ReverseEngineerSchemaJSONAsync(tableNames);
+
+            return jsonSchema;
         }
     }
 }

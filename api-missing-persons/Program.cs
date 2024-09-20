@@ -1,3 +1,4 @@
+using api_missing_persons.Interfaces;
 using api_missing_persons.Prompts;
 using api_missing_persons.Services;
 using Microsoft.SemanticKernel;
@@ -19,6 +20,8 @@ var connectionString = configuration.GetValue<string>("DatabaseConnection");
 // Add services to the container.
 builder.Services.AddApplicationInsightsTelemetry();
 builder.Logging.AddConsole();
+
+builder.Services.AddTransient<IAzureDbService>(s => new AzureDbService(connectionString));
 
 builder.Services.AddTransient<Kernel>(s =>
 {
