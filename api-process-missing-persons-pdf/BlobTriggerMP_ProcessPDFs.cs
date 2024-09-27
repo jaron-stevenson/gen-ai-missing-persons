@@ -23,7 +23,7 @@ namespace api_process_mp_pdfs.Function
         }
 
         [Function(nameof(BlobTriggerMP_ProcessPDFs))]
-        public async Task Run([BlobTrigger("inboundmppdfs/{name}", Connection = "stggannettpoc_STORAGE")] Stream stream, string name)
+        public async Task Run([BlobTrigger("inbound-mp-pdfs/{name}", Connection = "stggannettpoc_STORAGE")] Stream stream, string name)
         {
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();

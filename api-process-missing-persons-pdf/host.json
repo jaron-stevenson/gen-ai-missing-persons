@@ -9,13 +9,16 @@
       "enableLiveMetricsFilters": true
     },
     "logLevel": {
-      "Default": "Information",
-      "Microsoft": "Warning",
-      "Microsoft.Hosting.Lifetime": "Information"
+      "Default": "Error",
+      "Microsoft": "Error",
+      "Microsoft.Hosting.Lifetime": "Error",
+      "Host.Results": "Error",
+      "Function":"Error",
+      "Host.Aggregator":"Error"
     },
     "console": {
       "logLevel": {
-        "Default": "Information"
+        "Default": "Error"
       }
     }
   },

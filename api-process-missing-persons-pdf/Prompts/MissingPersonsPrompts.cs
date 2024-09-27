@@ -19,9 +19,12 @@ namespace api_process_mp_pdfs.Prompts
         1. Extract Fields: Using the fields, extract the details from the Data provided.
         2. Create JSON: Using the JSON struture below, populate the JSON structure with the data extracted from the Data.
         3. Please review JSON data to ensure it is properly formatted and free of errors. Make any necessary corrections for consistency and clarity
+        
+        ::: IMPORTANT: Return ONLY the raw JSON object. Do not wrap it in backticks or any other formatting. :::
 
         ###
-        RESPONSE FORMAT: Ensure the response is a JSON object structured as follows.
+        ### RESPONSE FORMAT: 
+        Ensure the response is a raw JSON object structured as follows. Do not include any additional text, markdown formatting, or code block syntax.
         {
             'name': '',
             'race': '',
