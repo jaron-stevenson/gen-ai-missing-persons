@@ -11,3 +11,5 @@ This is the GenAI Chat Service that allows any Client to interact with the data 
       Question: How many people went missing between the months of Oct and Dec?
       Response: A total of 3 people went missing during that timeframe.  
    ~~~
+
+We also have a custom DBQueryPlugin which is used to interact with the DB to collect the data needed to answer the user's question.
