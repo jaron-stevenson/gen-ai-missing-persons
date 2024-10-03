@@ -1,0 +1,133 @@
+﻿@using ui_frontend.Utils.Helpers;
+@using ui_frontend.Models;
+@using ui_frontend.Service;
+@using Blazored.LocalStorage;
+@attribute [StreamRendering]
+@inject SyncService syncService
+@inject UserSessionService userSessionService
+@inject ILocalStorageService LocalStorage
+@inject IJSRuntime JSRuntime;
+@inject ISnackbar Snackbar;
+@inject ProgressService progressService;
+@rendermode InteractiveServer
+<style>
+    .text-with-new-lines {
+        white-space: pre-wrap;
+    }
+
+</style>
+<MudStack>
+    <MudSpacer />
+    <MudStack>
+        <MudPaper Class="pa-4" Elevation="12" Style="margin-bottom:20px;margin-left:20vh;width: fit-content;">
+            <MudText Class="pa-4" Style="max-width: 1000px;font-style: normal;font-weight: 400;font-size: 14px;line-height: 20px;color: #323130;margin: 11px;white-space: normal;">
+                <div style="white-space: pre-wrap;">
+                    <span style="white-space: pre-line">@StatusText</span>
+                </div>
+            </MudText>
+            <MudSpacer />
+            @if (TripList.Count > 0)
+            {
+                foreach (var trip in TripList)
+                {
+                    <MudCard Outlined="true" Style="margin-bottom:20px;background-color:whitesmoke;">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">From @trip.StartingPoint to @trip.Destination</MudText>
+                                <MudText Typo="Typo.subtitle1">@trip.Summary</MudText>
+                                <MudText Typo="Typo.subtitle2" Style="font-style:italic">Drive Time: @trip.EstimatedDriveTime</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            @if (trip.Activities != null && trip.Activities.Any())
+                            {
+                            <MudText Typo="Typo.body1"><b>Activities</b></MudText>
+                                <ul style="margin-left:20px;list-style-type: square;">
+                                    @foreach (var activity in trip.Activities)
+                                    {
+                                        <li style="overflow-wrap:normal;">
+                                            <MudText Typo="Typo.body2" Style="word-wrap:normal">@activity.Title - <i style="color:dimgray;">@activity.Description</i></MudText>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            @if (trip.Accommodations != null && trip.Accommodations.Any())
+                            {
+                                <MudText Typo="Typo.body1"><b>Accommodations</b></MudText>
+                                <ul style="margin-left:20px;list-style-type: square;">
+                                    @foreach (var activity in trip.Accommodations)
+                                    {
+                                        <li>
+                                            <MudText Typo="Typo.body2">@activity.Title - <i style="color:dimgray;">@activity.Description</i></MudText>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton @onclick="(() => SyncToCarAsync(trip))" Variant="Variant.Text" Color="Color.Primary" Disabled="@progressService.ShowProgress">Sync to Car</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                    @*   var title = trip.Title;
+            <div>
+            <MudLink @onclick="(() => DoWork(filePath))" Style="font-style: normal;font-weight: 400;font-size: 12px;line-height: 16px;color: #707070;">@title</MudLink>
+            @* <a @onclick="DoWorkAndRedirect" href="" target="blank">@title</a> * @
+            </div> *@
+                }
+            }
+            <MudText Class="pa-4" Style="font-style: normal;margin: 11px;font-weight: 400;font-size: 12px;line-height: 16px;color: #707070;">
+                AI-generated content may be incorrect
+            </MudText>
+        </MudPaper>
+    </MudStack>
+
+</MudStack>
+@code {
+    [Parameter]
+    public string? StatusText { get; set; }
+
+    [Parameter]
+    public List<Trip> TripList { get; set; } = new List<Trip>();
+
+    private async Task SyncToCarAsync(Trip trip)
+    {
+        // sync that trip!
+        progressService.ShowProgress = true;
+        if(await syncService.SyncTrip(trip))
+        {
+            Snackbar.Add("Trip Synced!", Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add("Trip not synced.", Severity.Error);
+        }
+        progressService.ShowProgress = false;
+
+    }
+    // Method to clear content
+    public void ClearContent()
+    {
+        StatusText = string.Empty;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomLeft;
+        progressService.Notify += OnNotify;
+    }
+
+    public void OnNotify()
+    {
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    public void Dispose()
+    {
+        progressService.Notify -= OnNotify;
+    }
+
+}
