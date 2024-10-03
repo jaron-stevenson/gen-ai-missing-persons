@@ -27,7 +27,7 @@ namespace api_process_mp_pdfs.Function
             using var blobStreamReader = new StreamReader(stream);
             var content = await blobStreamReader.ReadToEndAsync();
             stream.Position = 0;
-            
+
             MemoryStream memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
             memoryStream.Position = 0;
@@ -35,13 +35,13 @@ namespace api_process_mp_pdfs.Function
             _logger.LogInformation($"C# Blob trigger function Processed blob\n Name: {name} \n Data: {content}");
 
             MissingPerson result = await _aiHelper.GenerateJSONStructureAsync(memoryStream, name);
-            string sqlConnectionString = Environment.GetEnvironmentVariable("DatabaseConnection")?? "";
-            
+            string sqlConnectionString = Environment.GetEnvironmentVariable("DatabaseConnection") ?? "";
+
             SQLMissingPersonHelper sqlmissingpersonhelper = new SQLMissingPersonHelper(sqlConnectionString);
             await sqlmissingpersonhelper.InsertMissingPersonAsync(result);
-               
+
             Console.WriteLine($@"Result: {result}");
-            _logger.LogInformation($"Result: {result}"); 
+            _logger.LogInformation($"Result: {result}");
         }
     }
 }

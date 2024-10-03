@@ -2,8 +2,8 @@ namespace api_process_mp_pdfs.Prompts
 {
     public static class MissingPersonsPluginPrompts
     {
-        
- 		
+
+
         public static string GetMissingPersonsExtractPrompt(string textData) =>
         $$$"""
         ###
@@ -26,23 +26,23 @@ namespace api_process_mp_pdfs.Prompts
         ### RESPONSE FORMAT: 
         Ensure the response is a raw JSON object structured as follows. Do not include any additional text, markdown formatting, or code block syntax.
         {
-            'name': '',
-            'race': '',
-            'age': 0,
-            'sex': '',
-            'height': '',
-            'weight': '',
-            'eye_color': '',
-            'hair': '',
-            'alias': '',
-            'tattoos': '',
-            'last_seen': '',
-            'date_reported': '',
-            'missing_from': '',
-            'conditions_of_disappearance': '',
-            'officer_info':'',
-            'phone_number1':'',
-            'phone_number2':''
+            "name": "",
+            "race": "",
+            "age": 0,
+            "sex": "",
+            "height": "",
+            "weight": "",
+            "eye_color": "",
+            "hair": "",
+            "alias": "",
+            "tattoos": "",
+            "last_seen": "",
+            "date_reported": "",
+            "missing_from": "",
+            "conditions_of_disappearance": "",
+            "officer_info":"",
+            "phone_number1":"",
+            "phone_number2":""
         }
         
         ::: EXAMPLE INPUT: :::
@@ -66,26 +66,26 @@ namespace api_process_mp_pdfs.Prompts
 
         ::: EXAMPLE OUTPUT: :::
         {
-            'name': 'Mike Smith',
-            'race': 'Black',
-            'age': 16,
-            'sex': 'Male'n,
-            'height': '5ft 7in',
-            'weight': '170 lbs.',
-            'eye_color': 'Brown',
-            'hair': 'Black',
-            'alias': 'N/A',
-            'tattoos': 'N/A',
-            'last_seen': '05/19/2024',
-            'date_reported': '05/19/2024',
-            'missing_from': '3900 block of Berkshire',
-            'conditions_of_disappearance': 'Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.',
-            'officer_info':'Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.',
-            'phone_number1':'313-596-5540',
-            'phone_number2':'1-800-SPEAKUP'
+            "name": "Mike Smith",
+            "race": "Black",
+            "age": 16,
+            "sex": "Male"n,
+            "height": "5' 7\"",
+            "weight": "170 lbs.",
+            "eye_color": "Brown",
+            "hair": "Black",
+            "alias": "N/A",
+            "tattoos": "N/A",
+            "last_seen": "05/19/2024",
+            "date_reported": "05/19/2024",
+            "missing_from": "3900 block of Berkshire",
+            "conditions_of_disappearance": "Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.",
+            "officer_info":"Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.",
+            "phone_number1":"313-596-5540",
+            "phone_number2":"1-800-SPEAKUP"
         }
 
         ::: RETURN the extracted data as JSON ::: 
-       """;	
+       """;
     }
 }

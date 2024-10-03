@@ -15,7 +15,7 @@ using OpenTelemetry.Trace;
 string ApiDeploymentName = Environment.GetEnvironmentVariable("ApiDeploymentName", EnvironmentVariableTarget.Process) ?? "";
 string ApiEndpoint = Environment.GetEnvironmentVariable("ApiEndpoint", EnvironmentVariableTarget.Process) ?? "";
 string ApiKey = Environment.GetEnvironmentVariable("ApiKey", EnvironmentVariableTarget.Process) ?? "";
-string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING")?? "";
+string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") ?? "";
 
 // Not being used but might be needed in the future
 // string TextEmbeddingName = Environment.GetEnvironmentVariable("EmbeddingName", EnvironmentVariableTarget.Process) ?? "";
@@ -26,6 +26,8 @@ string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICA
 // Here is a great link that covers this.  https://learn.microsoft.com/en-us/semantic-kernel/concepts/enterprise-readiness/observability/telemetry-with-console
 
 // Enable mnodel diagnostics with sensitive data.
+
+
 AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
 
 var connectionString = AppInsightsConnectionString;
@@ -46,6 +48,7 @@ using var meterProvider = Sdk.CreateMeterProviderBuilder()
     .AddMeter("Microsoft.SemanticKernel*")
     .AddAzureMonitorMetricExporter(options => options.ConnectionString = connectionString)
     .Build();
+
 // Create the OpenTelemetry LoggerFactory
 using var loggerFactory = LoggerFactory.Create(builder =>
 {
@@ -58,14 +61,15 @@ using var loggerFactory = LoggerFactory.Create(builder =>
         options.IncludeFormattedMessage = true;
         options.IncludeScopes = true;
     });
-    builder.SetMinimumLevel(LogLevel.Information);   
+    builder.SetMinimumLevel(LogLevel.Information);
 });
 // Now, we can see telemetry from Semantic Kernel in Azure Monitor and Application Insights
 // Anywhere the Semantic Kernel is used in the application, telemetry will be sent to Azure Monitor and Application Insights
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureServices(services => {
+    .ConfigureServices(services =>
+    {
         // services.AddApplicationInsightsTelemetryWorkerService();
         // services.ConfigureFunctionsApplicationInsights();
 
@@ -81,7 +85,7 @@ var host = new HostBuilder()
 
             return builder.Build();
         });
-        
+
         services.AddSingleton<IChatCompletionService>(sp =>
                      sp.GetRequiredService<Kernel>().GetRequiredService<IChatCompletionService>());
 
@@ -89,8 +93,8 @@ var host = new HostBuilder()
         // // For not using this just to get something up and running
         services.AddSingleton<ChatHistory>(s =>
         {
-           var chathistory = new ChatHistory();
-           return chathistory;
+            var chathistory = new ChatHistory();
+            return chathistory;
         });
 
         // The following is not being used but could come in handy in the future
