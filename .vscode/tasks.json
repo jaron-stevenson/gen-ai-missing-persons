@@ -16,6 +16,18 @@
 			}
 		},
 		{
+            "label": "build",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/api-missing-persons/api-missing-persons.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary;ForceNoAlign"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+		{
 			"label": "build (functions)",
 			"command": "dotnet",
 			"args": [
