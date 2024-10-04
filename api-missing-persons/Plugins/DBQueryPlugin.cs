@@ -11,6 +11,7 @@
         public async Task<string> GetMissingPersons(string query)
         {
             var dbResults = await azureDbService.GetDbResults(query);
+            Console.WriteLine(query);
             return dbResults;
         }
     }
