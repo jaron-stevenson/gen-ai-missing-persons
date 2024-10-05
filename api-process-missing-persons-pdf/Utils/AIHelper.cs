@@ -132,6 +132,13 @@ namespace api_process_mp_pdfs.Utils
                 // Deserialize the result into the MissingPerson class
                 MissingPerson? missingPersonData = JsonSerializer.Deserialize<MissingPerson>(extractionResultString ?? "", s_options);
 
+                var location = await GetLocationAsync(missingPersonData?.MissingFrom ?? "");
+                if (missingPersonData != null)
+                {
+                    missingPersonData.Latitude = location?.Latitude;
+                    missingPersonData.Longitude = location?.Longitude;
+                }
+
                 return missingPersonData;
             }
             catch (JsonException jsonEx)
@@ -148,6 +155,50 @@ namespace api_process_mp_pdfs.Utils
             }
         }
     
+
+      private async Task<Location?> GetLocationAsync(string missingFrom)
+        {
+            try
+            {
+                // Configure JSON serializer options
+                JsonSerializerOptions s_options = new() { WriteIndented = true };
+
+                // Set up execution settings for OpenAI prompt
+                var executionSettings = new OpenAIPromptExecutionSettings
+                {
+                    ResponseFormat = "json_object"
+                };
+
+                // Create the extraction prompt
+                var getLatLongPrompt = MissingPersonsPluginPrompts.GetLatitudeLongitudePrompt(missingFrom);
+
+                // Invoke the prompt asynchronously
+                var lagLongResult = await _kernel.InvokePromptAsync(getLatLongPrompt);
+
+                // Get the result as a string
+                var latLongResultString = lagLongResult .GetValue<string>();
+
+                // Log the result for debugging
+                _logger.LogDebug("Get Latitude and Longitude Result: {extractionResult}", latLongResultString);
+
+                // Deserialize the result into the MissingPerson class
+                Location? missingPersonGeocode = JsonSerializer.Deserialize<Location>(latLongResultString ?? "", s_options);
+
+                return missingPersonGeocode;
+            }
+            catch (JsonException jsonEx)
+            {
+                // Log JSON deserialization errors
+                _logger.LogError(jsonEx, "Failed to deserialize latLong result.");
+                throw; // Rethrow the exception if you want to propagate it
+            }
+            catch (Exception ex)
+            {
+                // Log other types of errors
+                _logger.LogError(ex, "An error occurred while trying to get Latitude and Longitude PDF text.");
+                throw; // Rethrow the exception if you want to propagate it
+            }
+        }
         // The following is not being used
         private async Task WriteToBlob(string containerName, string blobName, string content)
         {

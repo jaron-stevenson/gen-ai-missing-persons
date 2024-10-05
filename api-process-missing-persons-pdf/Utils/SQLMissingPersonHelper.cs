@@ -28,11 +28,11 @@ namespace api_process_mp_pdfs.Utils
                 INSERT INTO MissingPersons (
                     Name, Race, Age, Sex, Height, Weight, EyeColor, Hair, Alias, Tattoos,
                     LastSeen, DateReported, MissingFrom, ConditionsOfDisappearance, OfficerInfo,
-                    PhoneNumber1, PhoneNumber2, CurrentStatus
+                    PhoneNumber1, PhoneNumber2, CurrentStatus, Latitude, Longitude
                 ) VALUES (
                     @Name, @Race, @Age, @Sex, @Height, @Weight, @EyeColor, @Hair, @Alias, @Tattoos,
                     @LastSeen, @DateReported, @MissingFrom, @ConditionsOfDisappearance, @OfficerInfo,
-                    @PhoneNumber1, @PhoneNumber2, @CurrentStatus
+                    @PhoneNumber1, @PhoneNumber2, @CurrentStatus, @Latitude, @Longitude
                 )";
 
             using var command = new SqlCommand(sql, connection);
@@ -55,6 +55,8 @@ namespace api_process_mp_pdfs.Utils
             command.Parameters.Add("@PhoneNumber1", SqlDbType.NVarChar, 20).Value = person.PhoneNumber1 ?? (object)DBNull.Value;
             command.Parameters.Add("@PhoneNumber2", SqlDbType.NVarChar, 20).Value = person.PhoneNumber2 ?? (object)DBNull.Value;
             command.Parameters.Add("@CurrentStatus", SqlDbType.NVarChar, 7).Value = "Missing" ?? (object)DBNull.Value;
+            command.Parameters.Add("@Latitude", SqlDbType.Float).Value = person.Latitude ?? (object)DBNull.Value;
+            command.Parameters.Add("@Longitude", SqlDbType.Float).Value = person.Longitude ?? (object)DBNull.Value;
 
             await command.ExecuteNonQueryAsync();
         }

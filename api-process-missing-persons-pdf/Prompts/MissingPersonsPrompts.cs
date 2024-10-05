@@ -42,7 +42,9 @@ namespace api_process_mp_pdfs.Prompts
             "conditions_of_disappearance": "",
             "officer_info":"",
             "phone_number1":"",
-            "phone_number2":""
+            "phone_number2":"",
+            "latitude":0,
+            "longitude":0
         }
         
         ::: EXAMPLE INPUT: :::
@@ -63,6 +65,8 @@ namespace api_process_mp_pdfs.Prompts
         15. OFFICER INFO: COMMANDER JEVON JOHNSON 5th PRECINCT
         16. PHONE NUMBER1: 313-596-5540
         17. PHONE NUMBER2: 1-800-SPEAKUP
+        18. LATITUDE: 0
+        19. LONGITUDE: 0
 
         ::: EXAMPLE OUTPUT: :::
         {
@@ -82,10 +86,20 @@ namespace api_process_mp_pdfs.Prompts
             "conditions_of_disappearance": "Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.",
             "officer_info":"Keyshawn left his residence without permission and failed to return home. He was last seen wearing a a white shirt.",
             "phone_number1":"313-596-5540",
-            "phone_number2":"1-800-SPEAKUP"
+            "phone_number2":"1-800-SPEAKUP",
+            "latitude":0,
+            "longitude":0
         }
 
         ::: RETURN the extracted data as JSON ::: 
+       """;
+
+       public static string GetLatitudeLongitudePrompt(string missingFrom) =>
+        $$$"""
+        ###
+        Instructions: Extract the geo location for {{{missingFrom}}} in Detroit. Return the result using the raw JSON structure {"latitude": 0.0, "longitude": 0.0}.
+        ###
+        ::: IMPORTANT: Return ONLY the raw JSON object. Do not wrap it in backticks or any other formatting. :::
        """;
     }
 }

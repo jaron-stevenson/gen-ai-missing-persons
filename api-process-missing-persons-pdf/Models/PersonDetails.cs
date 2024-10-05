@@ -17,7 +17,9 @@
             'officer_info':'',
             'phone_number1':'',
             'phone_number2':'',
-            'currentstatus':''
+            'currentstatus':'',
+            'latitude':0,
+            'longitude':0
         }
 */
 
@@ -76,5 +78,11 @@ public class MissingPerson
 
     [JsonPropertyName("phone_number2")]
     public string? PhoneNumber2 { get; set; }
+
+    [JsonPropertyName("latitude")]  
+    public double? Latitude { get; set; }  
+  
+    [JsonPropertyName("longitude")]  
+    public double? Longitude { get; set; }  
 }
 

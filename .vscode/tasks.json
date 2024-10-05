@@ -88,6 +88,22 @@
 			"command": "host start",
 			"isBackground": true,
 			// "problemMatcher": "$func-dotnet-watch"
-		}
+		},
+		{
+            "label": "build-blazor-app",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/ui-frontend/ui-frontend.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
 	]
 }

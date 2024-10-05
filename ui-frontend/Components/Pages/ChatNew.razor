@@ -129,12 +129,12 @@
                 sessionInfo.Prompt = value;
                 qaList[newIndex].AnswerHidden = true;
                 var response = await chatService.GetAiResponseAsync(value, sessionInfo);
-                qaList[newIndex].Answer += response.Message;
+                qaList[newIndex].Answer += response.ChatResponse;
                 qaList[newIndex].AnswerHidden = false;
-                if (response.Destinations != null)
+                @* if (response.Destinations != null)
                 {
                         qaList[newIndex].AddTrips(response.Destinations);
-                }
+                } *@
                 // need to add the logic for citations as well.
 
                 // rfpclient.ChatStreamAsync must be implemented usinbg IAsyncEnumerable in order for the streaming to work properly

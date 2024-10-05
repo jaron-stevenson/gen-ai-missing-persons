@@ -22,11 +22,13 @@ namespace ui_frontend.Service
             };
         }
 
-        public async Task<TourGuideResponse> GetAiResponseAsync(string query, SessionInfo sessioninfo)
+        public async Task<ChatProviderResponse> GetAiResponseAsync(string query, SessionInfo sessioninfo)
         {
             var client = _httpClientFactory.CreateClient("ChatAPI");
-            var response = await client.PostAsJsonAsync("ChatProvider", sessioninfo);
-            TourGuideResponse? chatResponse = null;
+            var response = await client.PostAsJsonAsync("Chat", sessioninfo);
+            //TourGuideResponse? chatResponse = null;
+            ChatProviderResponse? chatResponse = null;
+            
             string? responseBody = null;
             if (response.IsSuccessStatusCode)
             {
@@ -34,7 +36,7 @@ namespace ui_frontend.Service
                 responseBody = await response.Content.ReadAsStringAsync();
                 try
                 {
-                    chatResponse = JsonSerializer.Deserialize<TourGuideResponse>(responseBody ?? "", GetOptions());
+                    chatResponse = JsonSerializer.Deserialize<ChatProviderResponse>(responseBody ?? "", GetOptions());
                 }
                 catch (JsonException)
                 {
@@ -43,7 +45,8 @@ namespace ui_frontend.Service
             }
             if (chatResponse == null)
             {
-                chatResponse = new TourGuideResponse { Message = responseBody };
+                chatResponse = new ChatProviderResponse { ChatResponse = responseBody };
+                //chatResponse = new TourGuideResponse { Message = responseBody };
             }
             Console.WriteLine(responseBody);
 
