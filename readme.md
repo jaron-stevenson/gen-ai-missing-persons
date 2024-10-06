@@ -23,7 +23,7 @@ The **Missing From** section has the last known location reported missing from. 
 
 ## Azure Maps for GeoCoding
 
-[Click here to review the Azure Maps Endpoint geocoding service](https://learn.microsoft.com/en-us/azure/azure-maps/how-to-search-for-address#request-latitude-and-longitude-for-an-address-geocoding).  Just need to provision an Azure Maps Service, get the client id and key for the service then make a GET request with the address.  Here is an example:
+[Click here for example](https://learn.microsoft.com/en-us/azure/azure-maps/how-to-search-for-address#request-latitude-and-longitude-for-an-address-geocoding). Provision an Azure Maps Service, get the client id and key for the service then make a GET request with the address.  Here is an example:
 
    ~~~
       https://atlas.microsoft.com/search/address/json?subscription-key=<your key>&api-version=1.0&language=en-US&query=3900 block of Berkshire, Detroit
