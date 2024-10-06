@@ -17,3 +17,18 @@ This is the GenAI Chat Service that allows any Client to interact with the data 
    ~~~
 
 We also have a custom DBQueryPlugin which is used to interact with the DB to collect the data needed to answer the user's question.
+
+## Ideas to consider
+The **Missing From** section has the last known location reported missing from.  It does not include a complete address, but this information can be used to get a latitude and longitude using a service like Azure Maps.
+
+## Azure Maps for GeoCoding
+
+[Click here to review the Azure Maps Endpoint geocoding service] (https://learn.microsoft.com/en-us/azure/azure-maps/how-to-search-for-address#request-latitude-and-longitude-for-an-address-geocoding).  Just need to provision an Azure Maps Service, get the client id and key for the service then make a GET request with the address.  Here is an example:
+
+   ~~~
+      https://atlas.microsoft.com/search/address/json?subscription-key=<your key>&api-version=1.0&language=en-US&query=3900 block of Berkshire, Detroit
+   ~~~
+
+Here is an example of the JSON response you will get back from GET request to Azure Maps Service.
+
+![example response](./images/azure-maps.jpg)
