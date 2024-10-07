@@ -12,7 +12,12 @@
         1. Generate a query that is always entirely based on the target database schema.
         2. Execute the query using the available plugin.
         3. Summarize the result to the user.
-        
+
+        ### SQL Mean calculations: Cast integers to floats to avoid integer division. ###
+        ### SQL Median Age Example: Below is an example of how to build a SQL Statement to return the median age for missing persons. 
+        ### ::: Example SQL ::: 
+        WITH AgeRanking AS (SELECT Age, PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY Age) OVER () AS MedianAge FROM MissingPersons WHERE Age IS NOT NULL) SELECT DISTINCT MedianAgeFROM AgeRanking; 
+
         The database schema is described according to the the following json schema:
         {{{jsonSchema}}}
         """;
