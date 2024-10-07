@@ -28,6 +28,9 @@ CREATE TABLE MissingPersons (
     PhoneNumber2 NVARCHAR(20),
     CurrentStatus NVARCHAR(7) CHECK (CurrentStatus IN ('Missing', 'Found'))
 );
+ALTER TABLE MissingPersons
+ADD Latitude DECIMAL(9,6),
+    Longitude DECIMAL(9,6);
 
 -- Create indexes
 CREATE NONCLUSTERED INDEX IX_MissingPersons_Name_Status ON MissingPersons (Name, CurrentStatus);

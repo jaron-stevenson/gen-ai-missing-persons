@@ -1,0 +1,68 @@
+﻿@page "/pdfviewer"
+@using ui_frontend.Service;
+@using Blazored.LocalStorage;
+@attribute [StreamRendering]
+@layout Layout.EmptyLayout
+@inject UserSessionService userSessionService
+@inject ILocalStorageService LocalStorage
+@rendermode InteractiveServer
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mx-auto my-5">
+    @* <iframe src="@selectedCitationPdf" width="100%" height="100%" frameborder="0"></iframe> *@
+    <MudGrid Justify="Justify.Center" Class="main-grid">
+        <MudItem xs="12">
+            <MudPaper Class="pa-4" Style="height:90vh;overflow: auto;" Elevation="12">
+                <iframe src="@selectedCitationPdf" style="width: 100%; height: 100%;"></iframe>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+@code {
+    private string? selectedCitationPdf;
+    public string? SelectedCitationPdf
+    {
+        get => selectedCitationPdf;
+        set
+        {
+            // if (value != selectedRFP)
+            // {
+            //     selectedRFP = value;
+            //     if (rfpclient != null)
+            //     {
+            //         rfpclient.SelectedRFP = value!;
+            //     }
+            // }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine("test");
+            selectedCitationPdf = await LocalStorage.GetItemAsync<string>("SharedSelectedCitation");
+            // if (rfpclient.NewUpload) // new RFP was uploaded need to refresh the list
+            // {
+            //     await rfpclient.GetRfpsAsync();
+            //     rfpclient.NewUpload = false; // set to false as we updated the list with the new item
+            // }
+            // SelectedRFP = rfpclient.SelectedRFP;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error getting Rfps from endpoint: {ex.Message}");
+            // Handle or log the exception as needed
+        }
+    }
+
+    private void OnClickExtractRequirements()
+    {
+        Task.Delay(1000);
+    }
+    private void OnClickDownload()
+    {
+        Task.Delay(1000);
+    }
+
+}
+
