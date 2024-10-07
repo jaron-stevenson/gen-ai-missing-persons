@@ -32,12 +32,17 @@ ALTER TABLE MissingPersons
 ADD Latitude DECIMAL(9,6),
     Longitude DECIMAL(9,6);
 
+ALTER TABLE MissingPersons
+ADD DateFound DATE NULL,
+    PdfName NVARCHAR(100) NULL
+
 -- Create indexes
 CREATE NONCLUSTERED INDEX IX_MissingPersons_Name_Status ON MissingPersons (Name, CurrentStatus);
 CREATE NONCLUSTERED INDEX IX_MissingPersons_LastSeen_Status ON MissingPersons (LastSeen, CurrentStatus);
 CREATE NONCLUSTERED INDEX IX_MissingPersons_DateReported_Status ON MissingPersons (DateReported, CurrentStatus);
 CREATE NONCLUSTERED INDEX IX_MissingPersons_MissingFrom_Status ON MissingPersons (MissingFrom, CurrentStatus);
 CREATE NONCLUSTERED INDEX IX_MissingPersons_CurrentStatus ON MissingPersons (CurrentStatus);
+CREATE NONCLUSTERED INDEX IX_MissingPersons_Name_Age_DateReported ON MissingPersons (Name, Age, DateReported);
 
 -- Insert sample data
 INSERT INTO MissingPersons (
