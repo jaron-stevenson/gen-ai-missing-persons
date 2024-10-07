@@ -1,6 +1,9 @@
 using System;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Configurations;
+using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -68,11 +71,12 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
+    .ConfigureOpenApi()
     .ConfigureServices(services =>
     {
         // services.AddApplicationInsightsTelemetryWorkerService();
         // services.ConfigureFunctionsApplicationInsights();
-
+        services.AddHttpClient();
         services.AddTransient<Kernel>(s =>
         {
             var builder = Kernel.CreateBuilder();

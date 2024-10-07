@@ -28,13 +28,42 @@ CREATE TABLE MissingPersons (
     PhoneNumber2 NVARCHAR(20),
     CurrentStatus NVARCHAR(7) CHECK (CurrentStatus IN ('Missing', 'Found'))
 );
-ALTER TABLE MissingPersons
-ADD Latitude DECIMAL(9,6),
-    Longitude DECIMAL(9,6);
 
-ALTER TABLE MissingPersons
+-- Add columns for address data
+ALTER TABLE MissingPersons 
 ADD DateFound DATE NULL,
-    PdfName NVARCHAR(100) NULL
+    PdfName NVARCHAR(100) NULL,
+    Latitude DECIMAL(10, 8),
+    Longitude DECIMAL(11, 8),
+    StreetNumber NVARCHAR(20),
+    StreetName NVARCHAR(100),
+    Municipality NVARCHAR(100),
+    Neighbourhood NVARCHAR(100),
+    CountrySecondarySubdivision NVARCHAR(100),
+    CountrySubdivisionName NVARCHAR(100),
+    PostalCode NVARCHAR(20),
+    ExtendedPostalCode NVARCHAR(20),
+    MatchConfidence DECIMAL(5, 4),
+    IsEnriched BIT DEFAULT 0;
+
+ALTER TABLE MissingPersons 
+ADD DateFound DATE NULL DEFAULT NULL,
+    PdfName NVARCHAR(100) NULL DEFAULT NULL,
+    Latitude DECIMAL(10, 8) NULL DEFAULT NULL,
+    Longitude DECIMAL(11, 8) NULL DEFAULT NULL,
+    StreetNumber NVARCHAR(20) NULL DEFAULT NULL,
+    StreetName NVARCHAR(100) NULL DEFAULT NULL,
+    Municipality NVARCHAR(100) NULL DEFAULT NULL,
+    Neighbourhood NVARCHAR(100) NULL DEFAULT NULL,
+    CountrySecondarySubdivision NVARCHAR(100) NULL DEFAULT NULL,
+    CountrySubdivisionName NVARCHAR(100) NULL DEFAULT NULL,
+    PostalCode NVARCHAR(20) NULL DEFAULT NULL,
+    ExtendedPostalCode NVARCHAR(20) NULL DEFAULT NULL,
+    MatchConfidence DECIMAL(5, 4) NULL DEFAULT NULL,
+    IsEnriched BIT NOT NULL DEFAULT 0;
+
+-- Add an index on the IsEnriched column for faster querying
+CREATE INDEX IX_MissingPersons_IsEnriched ON MissingPersons(IsEnriched);
 
 -- Create indexes
 CREATE NONCLUSTERED INDEX IX_MissingPersons_Name_Status ON MissingPersons (Name, CurrentStatus);
