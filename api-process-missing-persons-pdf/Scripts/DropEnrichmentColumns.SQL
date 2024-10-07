@@ -1,0 +1,15 @@
+ALTER TABLE MissingPersons
+DROP COLUMN DateFound,
+    PdfName,
+    Latitude,
+    Longitude,
+    StreetNumber,
+    StreetName,
+    Municipality,
+    Neighbourhood,
+    CountrySecondarySubdivision,
+    CountrySubdivisionName,
+    PostalCode,
+    ExtendedPostalCode,
+    MatchConfidence,
+    IsEnriched;

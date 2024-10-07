@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;  
+
+namespace api_process_mp_pdfs.Models;
   
 public class Location  
 {  

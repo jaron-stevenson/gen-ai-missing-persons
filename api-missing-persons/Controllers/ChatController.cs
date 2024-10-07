@@ -70,10 +70,14 @@ namespace api_missing_persons.Controllers
                 var sessionId = chatRequest.SessionId;
                 var chatHistory = _chatHistoryManager.GetOrCreateChatHistory(sessionId);
 
+                // example sql for calculating median                
+                var missingPersonsMedianAgeExample = $$$"""### SQL Median Age Example: Below is an example of how to build a SQL Statement to return the median age for missing persons. ### ::: Example SQL ::: WITH AgeRanking AS (     SELECT Age,            PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY Age) OVER () AS MedianAge    FROM MissingPersons    WHERE Age IS NOT NULL) SELECT DISTINCT MedianAgeFROM AgeRanking; """; 
+
                 _kernel.ImportPluginFromObject(new DBQueryPlugin(_azureDbService));
 
                 var jsonSchema = await GetDatabaseSchemaAsync();
 
+                chatHistory.AddUserMessage(missingPersonsMedianAgeExample);
                 chatHistory.AddUserMessage(NLPSqlPluginPrompts.GetNLPToSQLSystemPrompt(jsonSchema));
                 chatHistory.AddUserMessage(chatRequest.Prompt);
 
