@@ -29,7 +29,7 @@
                           AND Age = @Age
                           AND DateReported = @DateReported";
 
-            var personDetail = await connection.QuerySingleOrDefaultAsync<PersonDetail>(sql, new
+            var personDetail = await connection.QueryFirstOrDefaultAsync<PersonDetail>(sql, new
             {
                 Name = name,
                 Age = age,
