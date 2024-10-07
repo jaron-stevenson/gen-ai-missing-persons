@@ -48,6 +48,7 @@ namespace api_missing_persons.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] ChatProviderRequest chatRequest)
         {
             var response = new ChatProviderResponse();
@@ -88,10 +89,48 @@ namespace api_missing_persons.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error processing chat request");
-                return new BadRequestResult();
+                return StatusCode(500, "Internal server error.");
             }                      
 
             return new OkObjectResult(response);
+        }
+
+        [HttpPatch]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Patch([FromBody] MissingPersonFoundRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("Incoming request: {MissingPersonFoundRequest}", request);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var person = await _azureDbService.GetMissingPerson(request.Name.Trim().ToLower(), request.Age, request.DateReported);
+
+                if (person == null)
+                {
+                    _logger.LogInformation($"Pissing person not found in the database. Name:{request.Name}");
+                    return NotFound();
+                }
+
+                var updated = await _azureDbService.UpdateMissingPerson(person.Id, request.DateFound);
+
+                _logger.LogInformation($"Updated missing person. Id:{person.Id} Name:{person.Name}");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error patching missing person.");
+                return StatusCode(500, "Internal server error.");
+            }
         }
 
         private async Task<string> GetDatabaseSchemaAsync()
