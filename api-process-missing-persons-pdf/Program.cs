@@ -28,9 +28,6 @@ string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICA
 // Let's add some OpenTelemetry to the mix so we can listen to SPANs and METRICS from Semantic Kernel
 // Here is a great link that covers this.  https://learn.microsoft.com/en-us/semantic-kernel/concepts/enterprise-readiness/observability/telemetry-with-console
 
-// Enable mnodel diagnostics with sensitive data.
-
-
 AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
 
 var connectionString = AppInsightsConnectionString;
