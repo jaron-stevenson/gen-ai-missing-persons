@@ -1,6 +1,9 @@
 using System;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Configurations;
+using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -24,9 +27,6 @@ string AppInsightsConnectionString = Environment.GetEnvironmentVariable("APPLICA
 
 // Let's add some OpenTelemetry to the mix so we can listen to SPANs and METRICS from Semantic Kernel
 // Here is a great link that covers this.  https://learn.microsoft.com/en-us/semantic-kernel/concepts/enterprise-readiness/observability/telemetry-with-console
-
-// Enable mnodel diagnostics with sensitive data.
-
 
 AppContext.SetSwitch("Microsoft.SemanticKernel.Experimental.GenAI.EnableOTelDiagnosticsSensitive", true);
 
@@ -68,11 +68,12 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
+    .ConfigureOpenApi()
     .ConfigureServices(services =>
     {
         // services.AddApplicationInsightsTelemetryWorkerService();
         // services.ConfigureFunctionsApplicationInsights();
-
+        services.AddHttpClient();
         services.AddTransient<Kernel>(s =>
         {
             var builder = Kernel.CreateBuilder();
