@@ -24,14 +24,14 @@
             {
                 if (!context.Request.Headers.TryGetValue(API_KEY_NAME, out var extractedApiKey))
                 {
-                    context.Response.StatusCode = 401;
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     await context.Response.WriteAsync("API Key is missing or incorrect.");
                     return;
                 }
 
                 if (!_apiKey.Equals(extractedApiKey))
                 {
-                    context.Response.StatusCode = 401;
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                     await context.Response.WriteAsync("Unauthorized client.");
                     return;
                 }
