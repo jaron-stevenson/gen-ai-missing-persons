@@ -27,9 +27,10 @@
                         FROM dbo.MissingPersons
                         WHERE LOWER(TRIM(Name)) = @Name
                           AND Age = @Age
-                          AND DateReported = @DateReported";
+                          AND DateReported = @DateReported
+                          OR LastSeen = @DateReported";
 
-            var personDetail = await connection.QuerySingleOrDefaultAsync<PersonDetail>(sql, new
+            var personDetail = await connection.QueryFirstOrDefaultAsync<PersonDetail>(sql, new
             {
                 Name = name,
                 Age = age,
