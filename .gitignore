@@ -265,3 +265,14 @@ paket-files/
 __pycache__/
 *.pyc
 /api-missing-persons/appsettings.Local.json
+api-missing-persons/appsettings.json
+api-missing-persons/Properties/serviceDependencies.gen-ai-mp - Web Deploy.json
+api-missing-persons/Properties/serviceDependencies.json
+api-missing-persons/Properties/PublishProfiles/gen-ai-mp - Web Deploy.pubxml
+api-missing-persons/Properties/ServiceDependencies/gen-ai-mp - Web Deploy/appInsights1.arm.json
+api-missing-persons/Properties/ServiceDependencies/gen-ai-mp - Web Deploy/profile.arm.json
+api-process-missing-persons-pdf/Properties/serviceDependencies.api-process-missing-persons-pdf20241008134501 - Zip Deploy.json
+api-process-missing-persons-pdf/Properties/serviceDependencies.json
+api-process-missing-persons-pdf/Properties/PublishProfiles/api-process-missing-persons-pdf20241008134501 - Zip Deploy.pubxml
+api-process-missing-persons-pdf/Properties/ServiceDependencies/api-process-missing-persons-pdf20241008134501 - Zip Deploy/storage1.arm.json
+api-missing-persons/appsettings.json

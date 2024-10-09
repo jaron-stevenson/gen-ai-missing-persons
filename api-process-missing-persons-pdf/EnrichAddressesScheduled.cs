@@ -258,6 +258,31 @@ namespace api_process_mp_pdfs.Function
             }
         }
 
+        private async Task<JsonElement> GetBestMatchFromAzureMaps(JsonElement resultsArray)
+        {
+            return await Task.Run(() =>
+            {
+                JsonElement bestMatch = default;
+                double highestScore = double.MinValue;
+
+                foreach (JsonElement result in resultsArray.EnumerateArray())
+                {
+                    if (result.TryGetProperty("matchConfidence", out JsonElement matchConfidence) &&
+                        matchConfidence.TryGetProperty("score", out JsonElement scoreElement))
+                    {
+                        double score = scoreElement.GetDouble();
+                        if (score > highestScore)
+                        {
+                            highestScore = score;
+                            bestMatch = result;
+                        }
+                    }
+                }
+
+                return bestMatch;
+            });
+        }
+
         private async Task<EnrichedAddress> EnrichAddressWithAzureMaps(string address)
         {
             string encodedAddress = Uri.EscapeDataString(address);
@@ -276,23 +301,24 @@ namespace api_process_mp_pdfs.Function
             {
                 JsonElement root = document.RootElement;
                 JsonElement results = root.GetProperty("results");
-                
+
                 if (results.GetArrayLength() > 0)
                 {
-                    JsonElement firstResult = results[0];
+                    JsonElement topResult = await GetBestMatchFromAzureMaps(results);
+
                     return new EnrichedAddress
                     {
-                        MatchConfidence = firstResult.GetProperty("score").GetDouble(),
-                        StreetNumber = GetJsonPropertyString(firstResult, "address", "streetNumber"),
-                        StreetName = GetJsonPropertyString(firstResult, "address", "streetName"),
-                        Municipality = GetJsonPropertyString(firstResult, "address", "municipality"),
-                        Neighbourhood = GetJsonPropertyString(firstResult, "address", "neighbourhood"),
-                        CountrySecondarySubdivision = GetJsonPropertyString(firstResult, "address", "countrySecondarySubdivision"),
-                        CountrySubdivisionName = GetJsonPropertyString(firstResult, "address", "countrySubdivisionName"),
-                        PostalCode = GetJsonPropertyString(firstResult, "address", "postalCode"),
-                        ExtendedPostalCode = GetJsonPropertyString(firstResult, "address", "extendedPostalCode"),
-                        Latitude = firstResult.GetProperty("position").GetProperty("lat").GetDouble(),
-                        Longitude = firstResult.GetProperty("position").GetProperty("lon").GetDouble()
+                        MatchConfidence = topResult.GetProperty("score").GetDouble(),
+                        StreetNumber = GetJsonPropertyString(topResult, "address", "streetNumber"),
+                        StreetName = GetJsonPropertyString(topResult, "address", "streetName"),
+                        Municipality = GetJsonPropertyString(topResult, "address", "municipality"),
+                        Neighbourhood = GetJsonPropertyString(topResult, "address", "neighbourhood"),
+                        CountrySecondarySubdivision = GetJsonPropertyString(topResult, "address", "countrySecondarySubdivision"),
+                        CountrySubdivisionName = GetJsonPropertyString(topResult, "address", "countrySubdivisionName"),
+                        PostalCode = GetJsonPropertyString(topResult, "address", "postalCode"),
+                        ExtendedPostalCode = GetJsonPropertyString(topResult, "address", "extendedPostalCode").Split(',')[0].Trim(),
+                        Latitude = topResult.GetProperty("position").GetProperty("lat").GetDouble(),
+                        Longitude = topResult.GetProperty("position").GetProperty("lon").GetDouble()
                     };
                 }
             }
